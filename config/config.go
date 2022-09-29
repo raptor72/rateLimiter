@@ -11,6 +11,9 @@ type Config struct {
 	RedisAddress  string
 	RedisPassword string
 	RedisDB       int
+	LoginLimit    int
+	PasswordLimit int
+	IpLimit       int
 }
 
 var config *Config
@@ -33,6 +36,10 @@ func newConfig() (*Config, error) {
 	viper.SetDefault("RedisAddress", "localhost:6379")
 	viper.SetDefault("RedisPassword", "")
 	viper.SetDefault("RedisDB", 0)
+	viper.SetDefault("LoginLimit", 10)
+	viper.SetDefault("PasswordLimit", 100)
+	viper.SetDefault("IpLimit", 1000)
+
 	c := &Config{}
 	log.SetLevel(log.Level(c.Verbose))
 	log.WithField("level", log.GetLevel().String()).Info("Setting log level to")
