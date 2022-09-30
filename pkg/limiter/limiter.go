@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/raptor72/rateLimiter/config"
-	"github.com/raptor72/rateLimiter/pkg/client"
 	"log"
 	"strconv"
 	"time"
@@ -19,7 +18,8 @@ type Client struct {
 	rdb *redis.Client
 }
 
-func NewClient(config *config.Config, context context.Context) *Client {
+func NewClient(config *config.Config) *Client {
+	//ctx := context.Background()
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     config.RedisAddress,
 		Password: config.RedisPassword,
@@ -28,27 +28,18 @@ func NewClient(config *config.Config, context context.Context) *Client {
 
 	return &Client{
 		cfg: config,
-		ctx: context,
+		ctx: ctx,
 		rdb: rdb,
 	}
-}
-
-func NewClients() *client.Client {
-	cfg, err := config.New()
-	if err != nil {
-		panic(err)
-	}
-	cClient := client.NewClient(cfg, ctx)
-	return cClient
 }
 
 func (c *Client) GetCountPattern(pattern string) (*int, error) {
 	counter := 0
 
 	iter := c.rdb.Scan(c.ctx, 0, pattern+":*", 0).Iterator()
-	for iter.Next(ctx) {
+	for iter.Next(c.ctx) {
 
-		value, err := c.rdb.Get(ctx, iter.Val()).Result()
+		value, err := c.rdb.Get(c.ctx, iter.Val()).Result()
 		if err != nil {
 			return nil, err
 		}

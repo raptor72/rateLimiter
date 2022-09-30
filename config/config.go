@@ -31,8 +31,8 @@ func New() (*Config, error) {
 }
 
 func newConfig() (*Config, error) {
-	viper.SetDefault("port", 8088)
-	viper.SetDefault("verbose", 6) // 6 Debug // 4 info // 3 warning
+	viper.SetDefault("Port", 8080)
+	viper.SetDefault("Verbose", 6) // 6 Debug // 4 info // 3 warning
 	viper.SetDefault("RedisAddress", "localhost:6379")
 	viper.SetDefault("RedisPassword", "")
 	viper.SetDefault("RedisDB", 0)
