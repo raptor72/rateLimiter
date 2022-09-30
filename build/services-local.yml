@@ -8,6 +8,14 @@ services:
     command: redis-server --loglevel warning
     volumes: 
       - cache:/data
+  pg:
+    image: postgres:10.12-alpine
+    environment:
+      - POSTGRES_USER=cmdb_user
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=limitdb
+    ports:
+      - "15432:5432"
 volumes:
   cache:
     driver: local
