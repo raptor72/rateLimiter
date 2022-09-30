@@ -2,10 +2,9 @@ package limiter
 
 import (
 	"context"
-	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/raptor72/rateLimiter/config"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
 )
@@ -48,7 +47,7 @@ func (c *Client) GetCountPattern(pattern string) (*int, error) {
 
 		numValue, err = strconv.Atoi(value)
 		if err != nil {
-			fmt.Println("Probably wrong")
+            log.Warn("Wrong incremented value")
 			continue
 		}
 		if numValue != 0 && numValue != 1 {
