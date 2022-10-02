@@ -11,6 +11,7 @@ import (
 func main() {
 	c, err := config.New()
 	if err != nil {
+		fmt.Println("Bad config")
 		log.Fatal(err)
 	}
 
@@ -19,6 +20,8 @@ func main() {
 	mux.HandleFunc("/", handler.FallbackHandler)
 	mux.HandleFunc("/ping", handler.LiveHandler)
 	mux.HandleFunc("/login", handler.LoginHandler)
+	mux.HandleFunc("/password", handler.PasswordHandler)
+	mux.HandleFunc("/ip", handler.IPHandler)
 	log.Warning("Starting the server on http://127.0.0.1:%d", c.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", c.Port), mux))
 }

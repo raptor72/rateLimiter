@@ -63,7 +63,7 @@ func (c *Client) GetCountPattern(pattern string) (*int, error) {
 	return &counter, nil
 }
 
-func (c *Client) IncrementOrBlock(key string, limit int, ttl time.Duration) bool {
+func (c *Client) IncrementOrBlock(key string, limitCount int, ttl time.Duration) bool {
 	now := time.Now()
 	sec := now.Unix()
 
@@ -77,7 +77,7 @@ func (c *Client) IncrementOrBlock(key string, limit int, ttl time.Duration) bool
 		return false
 	}
 
-	if *count <= limit {
+	if *count <= limitCount {
 		err = c.IncrementWithTTL(fullKey, ttl)
 		if err != nil {
 			log.Fatal(err)

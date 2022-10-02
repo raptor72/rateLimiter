@@ -5,6 +5,22 @@ import (
 	"testing"
 )
 
+var limit = CoulDownTime{
+	SecLimit: 60,
+} 
+
+var LoginLimit = CountLimit{
+	Count: 10,
+}
+
+var PasswordLimit = CountLimit{
+	Count: 100,
+}
+
+var IpLimit = CountLimit{
+	Count: 1000,
+}
+
 func getDefaultConfig() *Config {
 	return &Config{
 		Port:          8080,
@@ -12,9 +28,12 @@ func getDefaultConfig() *Config {
 		RedisAddress:  "localhost:6379",
 		RedisPassword: "",
 		RedisDB:       0,
-		LoginLimit:    10,
-		PasswordLimit: 100,
-		IpLimit:       1000,
+		LoginLimit:    LoginLimit,
+		PasswordLimit: PasswordLimit,
+		IpLimit:       IpLimit,
+		LoginCouldown: limit,
+		PasswordCouldown: limit,
+		IpCouldown: limit,
 	}
 }
 
