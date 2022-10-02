@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --loglevel warning
+    volumes: 
+      - cache:/data
+  pg:
+    image: postgres:10.12-alpine
+    environment:
+      - POSTGRES_USER=limiter
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=limitdb
+    ports:
+      - "15432:5432"
+  limiter:
+    build: .  
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "cache"
+volumes:
+  cache:
+    driver: local

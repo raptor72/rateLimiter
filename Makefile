@@ -1,12 +1,12 @@
+BINARY_NAME=rateLimiter
 
-build-app:
-	go build -o rateLimiter -mod=vendor main.go
+.PHONY: build
+build:
+	go build -o ${BINARY_NAME} -mod=vendor main.go
 
-db-up:
-	docker-compose -f build/services-local.yml up --build -d
+run:
+	docker-compose -f service-limiter.yml up -d
 
-db-down:
-	docker-compose -f build/services-local.yml down
+test: run
+	go test -v ./... & docker-compose -f service-limiter.yml down
 
-app-run: build-app
-	./rateLimiter
