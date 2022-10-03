@@ -5,8 +5,11 @@ build:
 	go build -o ${BINARY_NAME} -mod=vendor main.go
 
 run:
+	docker-compose -f service-limiter.yml up
+
+run-background:
 	docker-compose -f service-limiter.yml up -d
 
-test: run
+test: run-background
 	go test -v ./... & docker-compose -f service-limiter.yml down
 

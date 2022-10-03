@@ -1,10 +1,13 @@
 package config
 
 import (
-	// "time"
-
+	"errors"
+	"fmt"
+	_ "github.com/jackc/pgx/stdlib"
+	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"time"
 )
 
 type CoulDownTime struct {
@@ -27,6 +30,8 @@ type Config struct {
 	LoginCouldown    CoulDownTime
 	PasswordCouldown CoulDownTime
 	IpCouldown       CoulDownTime
+	connectionString string
+	maxOpenConn      int
 }
 
 var config *Config
@@ -71,9 +76,16 @@ func newConfig() (*Config, error) {
 	viper.SetDefault("LoginCouldown", limit)
 	viper.SetDefault("PasswordCouldown", limit)
 	viper.SetDefault("IpCouldown", limit)
+	viper.SetDefault("connectionString", "postgresql://limiter:123456@127.0.0.1:15432/limitdb")
+	viper.SetDefault("maxOpenConn", 5)
 
-	c := &Config{}
-	log.SetLevel(log.Level(c.Verbose))
+	cfg, err := InitConfig()
+	if err != nil {
+		log.WithError(err).Error("Could not init Config")
+		return nil, err
+	}
+
+	log.SetLevel(log.Level(cfg.Verbose))
 	log.WithField("level", log.GetLevel().String()).Info("Setting log level to")
 
 	// Log formating
@@ -85,6 +97,23 @@ func newConfig() (*Config, error) {
 		},
 	)
 
+	return cfg, err
+}
+
+func InitConfig() (*Config, error) {
+	c := &Config{}
 	err := viper.Unmarshal(&c)
 	return c, err
+}
+
+func NewDB(cfg *Config) (*sqlx.DB, error) {
+	db, err := sqlx.Connect("pgx", cfg.connectionString)
+	if err == nil {
+		db.SetMaxOpenConns(cfg.maxOpenConn)
+		db.SetConnMaxIdleTime(5 * time.Minute)
+		db.SetConnMaxLifetime(30 * time.Minute)
+		return db, nil
+	}
+	fmt.Println(err)
+	return nil, errors.New("could not connect to database")
 }

@@ -22,6 +22,7 @@ func main() {
 	mux.HandleFunc("/login", handler.LoginHandler)
 	mux.HandleFunc("/password", handler.PasswordHandler)
 	mux.HandleFunc("/ip", handler.IPHandler)
+	mux.HandleFunc("/white_list", handler.WhiteListHandler)
 	log.Warningf("Starting the server on http://127.0.0.1:%d", c.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", c.Port), mux))
 }
