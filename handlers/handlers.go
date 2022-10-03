@@ -104,7 +104,7 @@ func (h *DefaultHandler) IPHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *DefaultHandler) WhiteListHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := config.NewDB(h.Config)
+	db, err := h.Config.NewDB()
 	if err != nil {
 		log.Errorln("new DB error:", err)
 		return

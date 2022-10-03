@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
@@ -30,8 +29,8 @@ type Config struct {
 	LoginCouldown    CoulDownTime
 	PasswordCouldown CoulDownTime
 	IpCouldown       CoulDownTime
-	connectionString string
-	maxOpenConn      int
+	ConnectionString string
+	MaxOpenConn      int
 }
 
 var config *Config
@@ -76,8 +75,8 @@ func newConfig() (*Config, error) {
 	viper.SetDefault("LoginCouldown", limit)
 	viper.SetDefault("PasswordCouldown", limit)
 	viper.SetDefault("IpCouldown", limit)
-	viper.SetDefault("connectionString", "postgresql://limiter:123456@127.0.0.1:15432/limitdb")
-	viper.SetDefault("maxOpenConn", 5)
+	viper.SetDefault("ConnectionString", "postgres://limiter:123456@127.0.0.1:15432/limitdb?sslmode=disable")
+	viper.SetDefault("MaxOpenConn", 5)
 
 	cfg, err := InitConfig()
 	if err != nil {
@@ -106,14 +105,13 @@ func InitConfig() (*Config, error) {
 	return c, err
 }
 
-func NewDB(cfg *Config) (*sqlx.DB, error) {
-	db, err := sqlx.Connect("pgx", cfg.connectionString)
+func (cfg *Config) NewDB() (*sqlx.DB, error) {
+	db, err := sqlx.Connect("pgx", cfg.ConnectionString)
 	if err == nil {
-		db.SetMaxOpenConns(cfg.maxOpenConn)
+		db.SetMaxOpenConns(cfg.MaxOpenConn)
 		db.SetConnMaxIdleTime(5 * time.Minute)
 		db.SetConnMaxLifetime(30 * time.Minute)
 		return db, nil
 	}
-	fmt.Println(err)
 	return nil, errors.New("could not connect to database")
 }

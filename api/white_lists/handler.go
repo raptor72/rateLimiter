@@ -2,8 +2,11 @@ package white_lists
 
 import (
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
+	"fmt"
+	"net"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func NewHandler(storage Storage) *Handler {
@@ -21,6 +24,14 @@ func (h *Handler) GetWhiteLists(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.WithError(err).Error("failed to select binding_queues")
 		return
+	}
+
+    for _, cidr := range whiteLists {
+    	ipv4Addr, ipv4Net, err := net.ParseCIDR(cidr.Address)
+    	if err != nil {
+    		log.Error(err)
+	    }
+        fmt.Println(ipv4Addr, ipv4Net)
 	}
 
 	res := whiteListResult{
