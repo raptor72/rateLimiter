@@ -42,7 +42,9 @@ func (u UnionRequest) GetField(tag string) (string, error) {
 	}
 }
 
-func BaseHandler(cfg *config.Config, w http.ResponseWriter, r *http.Request, lim config.CountLimit, timeout config.CoolDownTime, tag string) {
+func BaseHandler(cfg *config.Config, w http.ResponseWriter, r *http.Request,
+	lim config.CountLimit, timeout config.CoolDownTime, tag string,
+) {
 	limiterClient := limiter.NewClient(cfg)
 
 	body, err := ioutil.ReadAll(r.Body)
