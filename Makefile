@@ -13,5 +13,8 @@ run-background:
 test: run-background
 	go test -v ./... & docker-compose -f service-limiter.yml down
 
+test-race: run-background
+	go test -race -count 100 ./... & docker-compose -f service-limiter.yml down
+
 lint:
 	golangci-lint run
