@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/raptor72/rateLimiter/config"
 	"github.com/raptor72/rateLimiter/handlers"
 	log "github.com/sirupsen/logrus"
-	"net/http"
 )
 
 func main() {
