@@ -1,4 +1,4 @@
-package white_lists
+package whitelists
 
 import (
 	"encoding/json"
@@ -20,13 +20,13 @@ type Handler struct {
 }
 
 func (h *Handler) GetWhiteLists(w http.ResponseWriter, r *http.Request) {
-	whiteLists, err := h.storage.Select()
+	whitelists, err := h.storage.Select()
 	if err != nil {
 		log.WithError(err).Error("failed to select binding_queues")
 		return
 	}
 
-	for _, cidr := range whiteLists {
+	for _, cidr := range whitelists {
 		ipv4Addr, ipv4Net, err := net.ParseCIDR(cidr.Address)
 		if err != nil {
 			log.Error(err)
@@ -35,7 +35,7 @@ func (h *Handler) GetWhiteLists(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res := whiteListResult{
-		Items: whiteLists,
+		Items: whitelists,
 	}
 
 	bts, err := json.Marshal(&res)

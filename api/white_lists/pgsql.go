@@ -1,7 +1,8 @@
-package white_lists
+package whitelists
 
 import (
 	"fmt"
+
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 )

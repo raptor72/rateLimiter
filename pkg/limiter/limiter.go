@@ -2,11 +2,12 @@ package limiter
 
 import (
 	"context"
+	"strconv"
+	"time"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/raptor72/rateLimiter/config"
 	log "github.com/sirupsen/logrus"
-	"strconv"
-	"time"
 )
 
 var ctx = context.Background()
@@ -18,7 +19,7 @@ type Client struct {
 }
 
 func NewClient(config *config.Config) *Client {
-	//ctx := context.Background()
+	// ctx := context.Background()
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     config.RedisAddress,
 		Password: config.RedisPassword,
@@ -37,7 +38,6 @@ func (c *Client) GetCountPattern(pattern string) (*int, error) {
 
 	iter := c.rdb.Scan(c.ctx, 0, pattern+":*", 0).Iterator()
 	for iter.Next(c.ctx) {
-
 		value, err := c.rdb.Get(c.ctx, iter.Val()).Result()
 		if err != nil {
 			return nil, err
@@ -55,7 +55,6 @@ func (c *Client) GetCountPattern(pattern string) (*int, error) {
 		} else {
 			counter++
 		}
-
 	}
 	if err := iter.Err(); err != nil {
 		return nil, err
@@ -95,7 +94,7 @@ func (c *Client) IncrementWithTTL(key string, sec time.Duration) error {
 		return err
 	}
 
-	_, err = c.rdb.Expire(c.ctx, key, sec*time.Second).Result()
+	_, err = c.rdb.Expire(c.ctx, key, sec).Result()
 	if err != nil {
 		return err
 	}

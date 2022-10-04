@@ -35,15 +35,15 @@ func (u UnionRequest) GetField(tag string) (string, error) {
 		return u.Login, nil
 	case u.Password != "" && tag == "Password":
 		return u.Password, nil
-	case u.Ip != "" && tag == "Ip":
-		return u.Ip, nil
+	case u.IP != "" && tag == "Ip":
+		return u.IP, nil
 	default:
 		return "", err
 	}
 }
 
-func BaseHandler(config *config.Config, w http.ResponseWriter, r *http.Request, limit config.CountLimit, couldown config.CoulDownTime, tag string) {
-	limiterClient := limiter.NewClient(config)
+func BaseHandler(cfg *config.Config, w http.ResponseWriter, r *http.Request, lim config.CountLimit, timeout config.CoolDownTime, tag string) {
+	limiterClient := limiter.NewClient(cfg)
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -75,11 +75,11 @@ func BaseHandler(config *config.Config, w http.ResponseWriter, r *http.Request, 
 
 	fmt.Printf("Count %d\n", *count)
 
-	if *count > limit.Count {
+	if *count > lim.Count {
 		w.Write([]byte(`{"message":"no"}`))
 		return
 	}
-	res := limiterClient.IncrementOrBlock(field, limit.Count, time.Duration(couldown.SecLimit))
+	res := limiterClient.IncrementOrBlock(field, lim.Count, time.Duration(timeout.SecLimit))
 	if !res {
 		w.Write([]byte(`{"message":"no"}`))
 		return
@@ -89,15 +89,15 @@ func BaseHandler(config *config.Config, w http.ResponseWriter, r *http.Request, 
 }
 
 func (h *DefaultHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
-	BaseHandler(h.Config, w, r, h.Config.LoginLimit, h.Config.IpCouldown, "Login")
+	BaseHandler(h.Config, w, r, h.Config.LoginLimit, h.Config.IPCoolDown, "Login")
 }
 
 func (h *DefaultHandler) PasswordHandler(w http.ResponseWriter, r *http.Request) {
-	BaseHandler(h.Config, w, r, h.Config.PasswordLimit, h.Config.PasswordCouldown, "Password")
+	BaseHandler(h.Config, w, r, h.Config.PasswordLimit, h.Config.PasswordCoolDown, "Password")
 }
 
 func (h *DefaultHandler) IPHandler(w http.ResponseWriter, r *http.Request) {
-	BaseHandler(h.Config, w, r, h.Config.IpLimit, h.Config.IpCouldown, "Ip")
+	BaseHandler(h.Config, w, r, h.Config.IPLimit, h.Config.IPCoolDown, "Ip")
 }
 
 func (h *DefaultHandler) WhiteListHandler(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +107,7 @@ func (h *DefaultHandler) WhiteListHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	WhitelistHandler, err := injectWhiteLists(db)
+	WhitelistHandler := injectWhiteLists(db)
 	if err != nil {
 		log.WithError(err).Fatal("failed to inject server disk handler")
 	}

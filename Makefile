@@ -14,4 +14,4 @@ test: run-background
 	go test -v ./... & docker-compose -f service-limiter.yml down
 
 lint:
-	golangci-lint run .
+	golangci-lint run

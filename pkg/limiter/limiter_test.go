@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetCountUnsetPattern(t *testing.T) {
-	var expectedPatternCount int = 0
+	var expectedPatternCount int
 	emptyPatterns := []string{"login", "password", "1234567", "192.168.1.1", "10.8.8.8"}
 
 	c, err := config.New()
@@ -126,7 +126,7 @@ func TestGetCountMultipleDifferentTimePattern(t *testing.T) {
 }
 
 func TestGetCountNotIntPattern(t *testing.T) {
-	var expectedPatternCount int = 0
+	var expectedPatternCount int
 	tests := []struct {
 		input string
 		value interface{}

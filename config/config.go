@@ -2,14 +2,15 @@ package config
 
 import (
 	"errors"
-	_ "github.com/jackc/pgx/stdlib"
+	"time"
+
+	_ "github.com/jackc/pgx/stdlib" // trust
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"time"
 )
 
-type CoulDownTime struct {
+type CoolDownTime struct {
 	SecLimit int
 }
 
@@ -25,10 +26,10 @@ type Config struct {
 	RedisDB          int
 	LoginLimit       CountLimit
 	PasswordLimit    CountLimit
-	IpLimit          CountLimit
-	LoginCouldown    CoulDownTime
-	PasswordCouldown CoulDownTime
-	IpCouldown       CoulDownTime
+	IPLimit          CountLimit
+	LoginCoolDown    CoolDownTime
+	PasswordCoolDown CoolDownTime
+	IPCoolDown       CoolDownTime
 	ConnectionString string
 	MaxOpenConn      int
 }
@@ -48,7 +49,7 @@ func New() (*Config, error) {
 }
 
 func newConfig() (*Config, error) {
-	limit := CoulDownTime{
+	limit := CoolDownTime{
 		SecLimit: 60,
 	}
 
@@ -60,7 +61,7 @@ func newConfig() (*Config, error) {
 		Count: 100,
 	}
 
-	IpLimit := CountLimit{
+	IPLimit := CountLimit{
 		Count: 1000,
 	}
 
@@ -71,10 +72,10 @@ func newConfig() (*Config, error) {
 	viper.SetDefault("RedisDB", 0)
 	viper.SetDefault("LoginLimit", LoginLimit)
 	viper.SetDefault("PasswordLimit", PasswordLimit)
-	viper.SetDefault("IpLimit", IpLimit)
-	viper.SetDefault("LoginCouldown", limit)
-	viper.SetDefault("PasswordCouldown", limit)
-	viper.SetDefault("IpCouldown", limit)
+	viper.SetDefault("IPLimit", IPLimit)
+	viper.SetDefault("LoginCoolDown", limit)
+	viper.SetDefault("PasswordCoolDown", limit)
+	viper.SetDefault("IPCoolDown", limit)
 	viper.SetDefault("ConnectionString", "postgres://limiter:123456@127.0.0.1:15432/limitdb?sslmode=disable")
 	viper.SetDefault("MaxOpenConn", 5)
 

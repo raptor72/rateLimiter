@@ -1,11 +1,12 @@
 package config
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
-var limit = CoulDownTime{
+var limit = CoolDownTime{
 	SecLimit: 60,
 }
 
@@ -17,7 +18,7 @@ var PasswordLimit = CountLimit{
 	Count: 100,
 }
 
-var IpLimit = CountLimit{
+var IPLimit = CountLimit{
 	Count: 1000,
 }
 
@@ -30,10 +31,10 @@ func getDefaultConfig() *Config {
 		RedisDB:          0,
 		LoginLimit:       LoginLimit,
 		PasswordLimit:    PasswordLimit,
-		IpLimit:          IpLimit,
-		LoginCouldown:    limit,
-		PasswordCouldown: limit,
-		IpCouldown:       limit,
+		IPLimit:          IPLimit,
+		LoginCoolDown:    limit,
+		PasswordCoolDown: limit,
+		IPCoolDown:       limit,
 		ConnectionString: "postgres://limiter:123456@127.0.0.1:15432/limitdb?sslmode=disable",
 		MaxOpenConn:      5,
 	}

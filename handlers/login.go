@@ -4,7 +4,7 @@ type LoginRequest struct {
 	Login string `json:"login"`
 }
 
-type IpRequest struct {
+type IPRequest struct {
 	Login string `json:"ip"`
 }
 
@@ -15,17 +15,13 @@ type PasswordRequest struct {
 type UnionRequest struct {
 	Login    string `json:"login,omitempty"`
 	Password string `json:"password,omitempty"`
-	Ip       string `json:"ip,omitempty"`
+	IP       string `json:"ip,omitempty"`
 }
 
 type RequestStruct struct {
 	FiledName string
-	JsonName  string
+	JSONName  string
 }
 
-var Name string
-var JS string
-
-type TTT struct {
-	Name string `json: wdwd`
-}
+// var Name string
+// var JS string
