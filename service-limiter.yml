@@ -14,14 +14,19 @@ services:
       - POSTGRES_USER=limiter
       - POSTGRES_PASSWORD=123456
       - POSTGRES_DB=limitdb
+      - SCHEMA=public
     ports:
       - "15432:5432"
+    volumes:
+      - ./build/install_db.sh:/docker-entrypoint-initdb.d/install_db.sh
   limiter:
     build: .  
     ports:
       - "8080:8080"
     depends_on:
       - "cache"
+      - "pg"
 volumes:
   cache:
     driver: local
+  pg:
