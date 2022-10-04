@@ -26,12 +26,12 @@ jobs:
       uses: golangci/golangci-lint-action@v3
       with:
         version: v1.41.1
-
-#     - name: make lint
-#       run: make lint
       
     - name: make build
       run: make build
 
-    - name: make test
+#    - name: make test
+#      run: make test
+
+    - name: make test-race
       run: make test
