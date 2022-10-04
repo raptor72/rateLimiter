@@ -9,9 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
 func TestGetCountUnsetPattern(t *testing.T) {
-    var expectedPatternCount int = 0
+	var expectedPatternCount int = 0
 	emptyPatterns := []string{"login", "password", "1234567", "192.168.1.1", "10.8.8.8"}
 
 	c, err := config.New()
@@ -31,7 +30,6 @@ func TestGetCountUnsetPattern(t *testing.T) {
 		})
 	}
 }
-
 
 func TestGetCountSinglePattern(t *testing.T) {
 	tests := []struct {
@@ -53,7 +51,7 @@ func TestGetCountSinglePattern(t *testing.T) {
 		tc := tc
 		t.Run(tc.input, func(t *testing.T) {
 			client.rdb.FlushAll(client.ctx)
-			_, err := client.rdb.Incr(client.ctx, tc.input + ":").Result()
+			_, err := client.rdb.Incr(client.ctx, tc.input+":").Result()
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -84,14 +82,13 @@ func TestGetCountMultipleSameTimePattern(t *testing.T) {
 		tc := tc
 		t.Run(tc.input, func(t *testing.T) {
 			client.rdb.FlushAll(client.ctx)
-			client.rdb.IncrBy(client.ctx, tc.input + ":", int64(tc.expected))
+			client.rdb.IncrBy(client.ctx, tc.input+":", int64(tc.expected))
 			num, err := client.GetCountPattern(tc.input)
 			require.NoError(t, err)
 			require.Equal(t, tc.expected, *num)
 		})
 	}
 }
-
 
 func TestGetCountMultipleDifferentTimePattern(t *testing.T) {
 	tests := []struct {
@@ -111,29 +108,28 @@ func TestGetCountMultipleDifferentTimePattern(t *testing.T) {
 	for _, tc := range tests {
 		tc := tc
 		t.Run(tc.input, func(t *testing.T) {
-		    client.rdb.FlushAll(client.ctx)
-            for i:=0; i < tc.expected; i++ {
-                time.Sleep(2*time.Microsecond)
+			client.rdb.FlushAll(client.ctx)
+			for i := 0; i < tc.expected; i++ {
+				time.Sleep(2 * time.Microsecond)
 				now := time.Now()
-			    timestamp := now.Second()
-			    _, err := client.rdb.Incr(client.ctx, tc.input + ":" + strconv.Itoa(timestamp)).Result()
-			    if err != nil {
-				    t.Fatal(err)
-    			}
-	    	}
-		    num, err := client.GetCountPattern(tc.input)
-		    require.NoError(t, err)
-		    require.Equal(t, tc.expected, *num)
-	    })
+				timestamp := now.Second()
+				_, err := client.rdb.Incr(client.ctx, tc.input+":"+strconv.Itoa(timestamp)).Result()
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			num, err := client.GetCountPattern(tc.input)
+			require.NoError(t, err)
+			require.Equal(t, tc.expected, *num)
+		})
 	}
 }
-
 
 func TestGetCountNotIntPattern(t *testing.T) {
 	var expectedPatternCount int = 0
 	tests := []struct {
-		input    string
-		value    interface{}
+		input string
+		value interface{}
 	}{
 		{input: "login", value: "efwe"},
 		{input: "password", value: ""},
@@ -149,11 +145,11 @@ func TestGetCountNotIntPattern(t *testing.T) {
 	for _, tc := range tests {
 		tc := tc
 		t.Run(tc.input, func(t *testing.T) {
-    		client.rdb.FlushAll(client.ctx)
-	    	client.rdb.Set(client.ctx, tc.input, tc.value, 2*time.Millisecond)
-    		num, err := client.GetCountPattern(tc.input)
-    		require.NoError(t, err)
-	    	require.Equal(t, expectedPatternCount, *num)
-	    })
+			client.rdb.FlushAll(client.ctx)
+			client.rdb.Set(client.ctx, tc.input, tc.value, 2*time.Millisecond)
+			num, err := client.GetCountPattern(tc.input)
+			require.NoError(t, err)
+			require.Equal(t, expectedPatternCount, *num)
+		})
 	}
 }

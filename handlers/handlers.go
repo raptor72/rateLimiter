@@ -23,7 +23,6 @@ func (h *DefaultHandler) FallbackHandler(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *DefaultHandler) LiveHandler(w http.ResponseWriter, r *http.Request) {
-	// livenes проба сразу отдает 200
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(`{"message":"pong"}`))
 	w.WriteHeader(http.StatusOK)
@@ -66,8 +65,6 @@ func BaseHandler(config *config.Config, w http.ResponseWriter, r *http.Request, 
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	// fmt.Printf("%+v, %T\n", req, req)
 
 	count, err := limiterClient.GetCountPattern(field)
 	if err != nil {

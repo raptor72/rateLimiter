@@ -13,14 +13,14 @@ type PasswordRequest struct {
 }
 
 type UnionRequest struct {
-	Login string `json:"login,omitempty"`
+	Login    string `json:"login,omitempty"`
 	Password string `json:"password,omitempty"`
-	Ip string `json:"ip,omitempty"`
+	Ip       string `json:"ip,omitempty"`
 }
 
 type RequestStruct struct {
 	FiledName string
-	JsonName string
+	JsonName  string
 }
 
 var Name string

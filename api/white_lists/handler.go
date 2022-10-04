@@ -26,12 +26,12 @@ func (h *Handler) GetWhiteLists(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    for _, cidr := range whiteLists {
-    	ipv4Addr, ipv4Net, err := net.ParseCIDR(cidr.Address)
-    	if err != nil {
-    		log.Error(err)
-	    }
-        fmt.Println(ipv4Addr, ipv4Net)
+	for _, cidr := range whiteLists {
+		ipv4Addr, ipv4Net, err := net.ParseCIDR(cidr.Address)
+		if err != nil {
+			log.Error(err)
+		}
+		fmt.Println(ipv4Addr, ipv4Net)
 	}
 
 	res := whiteListResult{

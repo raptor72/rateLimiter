@@ -47,7 +47,7 @@ func (c *Client) GetCountPattern(pattern string) (*int, error) {
 
 		numValue, err = strconv.Atoi(value)
 		if err != nil {
-            log.Warn("Wrong incremented value")
+			log.Warn("Wrong incremented value")
 			continue
 		}
 		if numValue != 0 && numValue != 1 {

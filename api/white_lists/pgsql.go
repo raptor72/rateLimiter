@@ -32,13 +32,13 @@ func (s *PgsqlStorage) Select() ([]*WhiteListModel, error) {
 
 	q, args, err := selectBuilder.ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("ToSql err: %v", err)
+		return nil, fmt.Errorf("toSql err: %w", err)
 	}
 
 	whiteLists := []*WhiteListModel{}
 
 	if err := s.db.Select(&whiteLists, q, args...); err != nil {
-		return nil, fmt.Errorf("Select err: %v", err)
+		return nil, fmt.Errorf("select err: %w", err)
 	}
 
 	return whiteLists, nil
@@ -52,13 +52,13 @@ func (s *PgsqlStorage) Select() ([]*WhiteListModel, error) {
 
 // 	q, args, err := selectBuilder.ToSql()
 // 	if err != nil {
-// 		return nil, fmt.Errorf("ToSql err: %v", err)
+// 		return nil, fmt.Errorf("ToSql err: %w", err)
 // 	}
 
 // 	whiteLists := []*WhiteListModel{}
 
 // 	if err := s.db.Select(&whiteLists, q, args...); err != nil {
-// 		return nil, fmt.Errorf("Select err: %v", err)
+// 		return nil, fmt.Errorf("Select err: %w", err)
 // 	}
 
 // 	return whiteLists, nil
