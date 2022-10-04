@@ -1,0 +1,32 @@
+name: Makefile CI
+
+env:
+  GO111MODULE: "on"
+
+on:
+  push:
+    branches: [ "master" ]
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ^1.18
+
+    - name: Check out code
+      uses: actions/checkout@v3
+
+    - name: make lint
+      run: make lint
+      
+#     - name: make build
+#       run: make build
+
+#     - name: make test
+#       run: make test
