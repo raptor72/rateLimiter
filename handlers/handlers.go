@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net"
 	"net/http"
 	"time"
 
@@ -70,27 +69,16 @@ func BaseHandler(cfg *config.Config, w http.ResponseWriter, r *http.Request,
 	}
 
 	if tag == "Ip" {
-		ip := net.ParseIP(req.IP)
-
-		if ip == nil {
+		accept, decline, err := CheckWhiteBlack(cfg, req)
+		if err != nil {
 			ReturnBadRequest(w, fmt.Errorf("can not parse ip address from %v", req.IP))
 			return
 		}
-		accept, err := InWhiteList(cfg, ip)
-		if err != nil {
-			log.WithError(err).Error("Get error during white list checking")
-		}
 		if accept {
-			log.Infof("Address %v accepted by white list", ip)
 			ReturnAccept(w)
 			return
 		}
-		decline, err := InBlackList(cfg, ip)
-		if err != nil {
-			log.WithError(err).Error("Get error during black list checking")
-		}
 		if decline {
-			log.Infof("Address %v blocked by black list", ip)
 			ReturnDecline(w)
 			return
 		}
