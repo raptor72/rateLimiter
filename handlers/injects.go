@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/jmoiron/sqlx"
-	"github.com/raptor72/rateLimiter/api/white_lists"
+	"github.com/raptor72/rateLimiter/api/whitelists"
 )
 
 func injectWhiteLists(db *sqlx.DB) *whitelists.Handler {

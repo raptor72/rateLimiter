@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"time"
 
@@ -29,7 +29,7 @@ func (h *DefaultHandler) LiveHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u UnionRequest) GetField(tag string) (string, error) {
-	err := errors.New("do not have valid field")
+	err := fmt.Errorf("do not get valid field for tag %v", tag)
 	switch {
 	case u.Login != "" && tag == "Login":
 		return u.Login, nil
@@ -50,6 +50,7 @@ func BaseHandler(cfg *config.Config, w http.ResponseWriter, r *http.Request,
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.WithError(err).Error("failed to read request body")
+		ReturnBadRequest(w, err)
 		return
 	}
 
@@ -57,37 +58,63 @@ func BaseHandler(cfg *config.Config, w http.ResponseWriter, r *http.Request,
 
 	if err := json.Unmarshal(body, &req); err != nil {
 		log.WithError(err).Error("failed to unmarshal request body")
-		w.WriteHeader(http.StatusBadRequest)
+		ReturnBadRequest(w, err)
 		return
 	}
 
 	field, err := req.GetField(tag)
 	if err != nil {
-		log.WithError(err).Error("Wrong json")
-		w.WriteHeader(http.StatusBadRequest)
+		log.WithError(err).Error("Wrong input body json")
+		ReturnBadRequest(w, err)
 		return
+	}
+
+	if tag == "Ip" {
+		ip := net.ParseIP(req.IP)
+
+		if ip == nil {
+			ReturnBadRequest(w, fmt.Errorf("can not parse ip address from %v", req.IP))
+			return
+		}
+		accept, err := InWhiteList(cfg, ip)
+		if err != nil {
+			log.WithError(err).Error("Get error during white list checking")
+		}
+		if accept {
+			log.Infof("Address %v accepted by white list", ip)
+			ReturnAccept(w)
+			return
+		}
+		decline, err := InBlackList(cfg, ip)
+		if err != nil {
+			log.WithError(err).Error("Get error during black list checking")
+		}
+		if decline {
+			log.Infof("Address %v blocked by black list", ip)
+			ReturnDecline(w)
+			return
+		}
 	}
 
 	count, err := limiterClient.GetCountPattern(field)
 	if err != nil {
-		log.WithError(err).Error("have err")
-		w.WriteHeader(http.StatusBadRequest)
+		log.WithError(err).Error("have GetCountPattern err")
+		ReturnBadRequest(w, err)
 		return
 	}
 
-	fmt.Printf("Count %d\n", *count)
+	log.Infof("Count %d\n", *count)
 
 	if *count > lim.Count {
-		w.Write([]byte(`{"message":"no"}`))
+		ReturnDecline(w)
 		return
 	}
 	res := limiterClient.IncrementOrBlock(field, lim.Count, time.Duration(timeout.SecLimit))
 	if !res {
-		w.Write([]byte(`{"message":"no"}`))
+		ReturnDecline(w)
 		return
 	}
-	w.Write([]byte(`{"message":"yes"}`))
-	w.WriteHeader(http.StatusOK)
+	ReturnAccept(w)
 }
 
 func (h *DefaultHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {

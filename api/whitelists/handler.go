@@ -22,7 +22,7 @@ type Handler struct {
 func (h *Handler) GetWhiteLists(w http.ResponseWriter, r *http.Request) {
 	whitelists, err := h.storage.Select()
 	if err != nil {
-		log.WithError(err).Error("failed to select binding_queues")
+		log.WithError(err).Error("failed to select white lists")
 		return
 	}
 
